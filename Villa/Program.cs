@@ -17,13 +17,13 @@ namespace VillaApp
 			Log.Logger = new LoggerConfiguration().MinimumLevel.Warning()
 				.WriteTo.File("log/villaLogs.txt", rollingInterval: RollingInterval.Year).CreateLogger();
 
-
+			
 			builder.Host.UseSerilog();
 
 			builder.Services.AddControllers(options =>
 			{
 				options.ReturnHttpNotAcceptable=true;
-			});
+			}).AddNewtonsoftJson();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
@@ -31,7 +31,7 @@ namespace VillaApp
 			builder.Services.AddDbContext<AppDbContext>();
 
 			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+			builder.Services.AddAutoMapper(typeof(MappingConfig));
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.

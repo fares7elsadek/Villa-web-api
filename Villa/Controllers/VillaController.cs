@@ -1,20 +1,24 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using VillaApp.Models.Dtos;
 using VillaApp.Models;
 using VillaApp.Models.Repository.IRepository;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.JsonPatch;
+using VillaApp.Models.Dtos.VillaDto;
+using AutoMapper;
 
 namespace VillaApp.Controllers
 {
-	[Route("api/Villa")]
+    [Route("api/Villa")]
 	[ApiController]
 	public class VillaController : ControllerBase
 	{
 		private readonly IUnitOfWork _unitOfWork;
-        public VillaController(IUnitOfWork unitOfWork)
+		private readonly IMapper _mapper;
+        public VillaController(IUnitOfWork unitOfWork,IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+			_mapper = mapper;
         }
 
         [HttpGet]
@@ -79,7 +83,7 @@ namespace VillaApp.Controllers
 			_unitOfWork.Save();
 			return Ok();
 		}
-		[HttpPost("{id}")]
+		[HttpPut("{id}")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public ActionResult Update(Guid id,[FromBody]VillaDto villa)
@@ -97,6 +101,24 @@ namespace VillaApp.Controllers
 			oldvilla.ImageUrl = villa.ImageUrl;
 			oldvilla.Amenity = villa.Amenity;
 
+			_unitOfWork.Villas.Update(oldvilla);
+			_unitOfWork.Save();
+			return CreatedAtAction(nameof(GetVillas), new { id = oldvilla.Id }, oldvilla);
+		}
+
+
+		[HttpPatch("{id}")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		public ActionResult UpdatePatch(Guid id, [FromBody] JsonPatchDocument patch)
+		{
+			var oldvilla = _unitOfWork.Villas.GetOrDefault(v => v.Id == id);
+			if (oldvilla == null)
+			{
+				return BadRequest();
+			}
+
+			patch.ApplyTo(oldvilla);
 			_unitOfWork.Villas.Update(oldvilla);
 			_unitOfWork.Save();
 			return CreatedAtAction(nameof(GetVillas), new { id = oldvilla.Id }, oldvilla);
