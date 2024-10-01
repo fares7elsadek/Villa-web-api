@@ -1,5 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.EventSource;
+using Serilog;
+using VillaApp.Models.Data;
+using VillaApp.Models.Repository;
+using VillaApp.Models.Repository.IRepository;
 
-namespace Villa
+namespace VillaApp
 {
 	public class Program
 	{
@@ -8,11 +14,23 @@ namespace Villa
 			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
+			Log.Logger = new LoggerConfiguration().MinimumLevel.Warning()
+				.WriteTo.File("log/villaLogs.txt", rollingInterval: RollingInterval.Year).CreateLogger();
 
-			builder.Services.AddControllers();
+
+			builder.Host.UseSerilog();
+
+			builder.Services.AddControllers(options =>
+			{
+				options.ReturnHttpNotAcceptable=true;
+			});
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
+
+			builder.Services.AddDbContext<AppDbContext>();
+
+			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			var app = builder.Build();
 
