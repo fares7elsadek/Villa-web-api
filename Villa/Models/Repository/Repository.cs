@@ -14,9 +14,9 @@ namespace VillaApp.Models.Repository
             this._db = db;
 			this._dbSet = db.Set<T>();
         }
-        public void Add(T entity)
+        public async Task AddAsync(T entity)
 		{
-			this._dbSet.Add(entity);
+			await this._dbSet.AddAsync(entity);
 		}
 
 		public void Delete(T entity)
@@ -24,7 +24,7 @@ namespace VillaApp.Models.Repository
 			this._dbSet.Remove(entity);
 		}
 
-		public IEnumerable<T> GetAll(string? IncludeProperties = null)
+		public async Task<IEnumerable<T>> GetAllAsync(string? IncludeProperties = null)
 		{
 			IQueryable<T> query = this._dbSet;
 			if (!string.IsNullOrEmpty(IncludeProperties))
@@ -34,10 +34,10 @@ namespace VillaApp.Models.Repository
 					query = query.Include(property);
 				}
 			}
-			return query.ToList();
+			return await query.ToListAsync();
 		}
 
-		public IEnumerable<T> GetAllWithCondition(Expression<Func<T, bool>> filter, string? IncludeProperties = null)
+		public async Task<IEnumerable<T>> GetAllWithConditionAsync(Expression<Func<T, bool>> filter, string? IncludeProperties = null)
 		{
 			IQueryable<T> query = this._dbSet.Where(filter);
 			if (!string.IsNullOrEmpty(IncludeProperties))
@@ -47,10 +47,10 @@ namespace VillaApp.Models.Repository
 					query = query.Include(property);
 				}
 			}
-			return query.ToList();
+			return await query.ToListAsync();
 		}
 
-		public T GetOrDefault(Expression<Func<T, bool>> filter, string? IncludeProperties = null)
+		public async Task<T> GetOrDefaultAsync(Expression<Func<T, bool>> filter, string? IncludeProperties = null)
 		{
 			IQueryable<T> query = this._dbSet.Where(filter);
 			if (!string.IsNullOrEmpty(IncludeProperties))
@@ -60,7 +60,7 @@ namespace VillaApp.Models.Repository
 					query = query.Include(property);
 				}
 			}
-			return query.FirstOrDefault();
+			return await query.FirstOrDefaultAsync();
 		}
 
 		public void RemoveRange(IEnumerable<T> entities)

@@ -7,15 +7,22 @@ namespace VillaApp.Models.Repository
 	{
 		private readonly AppDbContext _db;
 		public IVillasRepository Villas { get; private set; }
+		public IVillaNumberRepository VillaNumber { get; private set; }
+		public IUserRepository User {  get; private set; }
 
-		public UnitOfWork(AppDbContext db)
+		public UnitOfWork(AppDbContext db,
+			IVillasRepository Villas,
+			IVillaNumberRepository VillaNumber,
+			IUserRepository User)
         {
             this._db = db;
-			Villas = new VillaRepository(this._db);
+			this.VillaNumber = VillaNumber;
+			this.User = User;
+			this.Villas = Villas;
         }
-		public void Save()
+		public async Task SaveAsync()
 		{
-			_db.SaveChanges();
+			await _db.SaveChangesAsync();
 		}
 	}
 }

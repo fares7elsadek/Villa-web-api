@@ -6,7 +6,9 @@ namespace VillaApp.Models.Data
 	public class AppDbContext: DbContext
 	{
 		public DbSet<Villas> villas { get; set; }
+		public DbSet<VillaNumber> villaNumber { get; set; }
 
+		public DbSet<User> users { get; set; }
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			var conn = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();

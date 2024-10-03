@@ -4,15 +4,15 @@ namespace VillaApp.Models.Repository.IRepository
 {
 	public interface IRepository<T> where T : class
 	{
-		 IEnumerable<T> GetAll(string? IncludeProperties = null);
+		 Task<IEnumerable<T>> GetAllAsync(string? IncludeProperties = null);
 
-		 IEnumerable<T> GetAllWithCondition(Expression<Func<T,bool>> filter,string? IncludeProperties = null);
+		Task<IEnumerable<T>> GetAllWithConditionAsync(Expression<Func<T,bool>> filter,string? IncludeProperties = null);
 
-		 T GetOrDefault(Expression<Func<T,bool>> filter,string? IncludeProperties = null);
+		 Task<T> GetOrDefaultAsync(Expression<Func<T,bool>> filter,string? IncludeProperties = null);
 
 		 void Delete(T entity);
 
-		 void Add (T entity);
+		 Task AddAsync(T entity);
 		 void RemoveRange(IEnumerable<T> entities);
 		 
 	}

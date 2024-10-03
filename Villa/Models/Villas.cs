@@ -18,6 +18,8 @@
 		public string Amenity { get; set; }
 		public DateTime? CreatedAt { get; set; }
 
+		public List<VillaNumber> VillaNumbers { get; set; } = new List<VillaNumber>();
+
 		public DateTime? UpdatedAt { get; set; }
 	}
 }

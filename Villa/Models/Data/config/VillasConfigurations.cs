@@ -29,7 +29,13 @@ namespace VillaApp.Models.Data.config
 				.HasDefaultValueSql("GETDATE()");
 
 
-			builder.HasData(LoadData());
+			builder.HasMany(x => x.VillaNumbers)
+				.WithOne(x => x.Villa)
+				.HasForeignKey(x => x.VillaId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+
+			//builder.HasData(LoadData());
 		}
 
 		private List<Villas> LoadData()
