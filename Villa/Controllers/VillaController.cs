@@ -29,6 +29,7 @@ namespace VillaApp.Controllers
 		[Authorize]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[ResponseCache(Duration = 30)]
 		public async Task<ActionResult<ApiResponse>> GetVillas()
 		{
 			try

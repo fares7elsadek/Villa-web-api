@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.EventSource;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using VillaApp.Models.Data;
@@ -25,13 +26,46 @@ namespace VillaApp
 			
 			builder.Host.UseSerilog();
 
-			builder.Services.AddControllers(options =>
-			{
-				options.ReturnHttpNotAcceptable=true;
-			}).AddNewtonsoftJson();
+			builder.Services.AddControllers()
+				.AddNewtonsoftJson();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
-			builder.Services.AddSwaggerGen();
+			builder.Services.AddSwaggerGen(options =>
+			{
+				
+				options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+				{
+					Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+					Name = "Authorization", 
+					In = ParameterLocation.Header, 
+					Type = SecuritySchemeType.Http,
+					Scheme = "Bearer" 
+				});
+
+				
+				options.AddSecurityRequirement(new OpenApiSecurityRequirement
+				{
+					{
+						new OpenApiSecurityScheme
+						{
+							Reference = new OpenApiReference
+							{
+								Type = ReferenceType.SecurityScheme,
+								Id = "Bearer" 
+							},
+							Scheme = "Bearer", 
+							Name = "Bearer",
+							In = ParameterLocation.Header
+						},
+						new List<string>()
+					}
+				});
+			});
+
+
+
+			builder.Services.AddResponseCaching();
+
 			builder.Services.AddDbContext<AppDbContext>();
 			builder.Services.AddScoped<IVillasRepository,VillaRepository>();
 			builder.Services.AddScoped<IVillaNumberRepository, VillaNumberRepository>();
